@@ -2,15 +2,15 @@ import Mathlib
 
 open CategoryTheory
 
-/-
+/-!
 Base space:
 locally compact space of finite cohomological dim
 -/
 variable (X : TopCat) (Y : TopCat)
 
-/-
--- Base ring:
--- notherian, commutative and of finite cohomological dim
+/-!
+Base ring:
+notherian, commutative and of finite cohomological dim
 -/
 -- variable {α : Type u} (CommRing : R)
 variable {α : Type u} (R) [CommRing R] [IsNoetherianRing R]
@@ -25,7 +25,7 @@ Sh(X)
 -- TODO: Is this the right way to define sheaf of R-modules?
 abbrev Sh (base : TopCat) := TopCat.Sheaf (ModuleCat R) base
 
-/-
+/-!
 Pass to complexes of sheaves,
 bounded from below,
 still an abelian category
@@ -37,7 +37,7 @@ instance (base : TopCat) : Preadditive (Sh R base) := instPreadditiveSheaf
 
 abbrev C (base : TopCat) := CochainComplex (Sh R base) ℤ
 
-/-
+/-!
 Pass to derived category
 of complexes of sheaves,
 becoming triangulated (optional)
@@ -48,17 +48,27 @@ D⁺(X)
 -- wrap Sh/C/D in `Category`.
 abbrev D (base : TopCat) := DerivedCategory (Category (C R X))
 
-/-
+/-!
 Continuous map f : X → Y : TopCat
 induces direct image f_* : Sh(X) ⥤ Sh(Y),
 induces functor on cochain complexes f_* : C⁺(X) ⥤ C⁺(Y),
 induces right derived functor R f_* : D⁺(X) ⥤ D⁺(Y)
--/
 
-/-
-Thus there is the "m aking derivation" map
+This sums up to the "m aking derivation" map
 R(-) : (Sh(X) ⥤ Sh(Y )) → (D⁺(X) → D⁺(Y))
 -/
+
+
+/-!
+Define/search for HomSheafComplex
+and then define its right derived functor
+-/
+
+
+/-
+Statement of the main theorem
+-/
+
 
 section SheafExperiment
 -- Abelian sheaf
