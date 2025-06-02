@@ -2,17 +2,19 @@ import Mathlib
 
 open CategoryTheory
 
+universe v v' u w
+
 /-!
 Base space:
 locally compact space of finite cohomological dim
 -/
-variable (X : TopCat)
+variable (X : TopCat.{u})
 
 /-!
 Base ring:
 notherian, commutative and of finite cohomological dim
 -/
-variable (R) [CommRing R] [IsNoetherianRing R]
+variable (R : Type w) [CommRing R] [IsNoetherianRing R]
 
 /-!
 Sheaves considered:
@@ -22,7 +24,7 @@ Sh(X)
 -/
 
 -- TODO: Is this the right way to define sheaf of R-modules?
-abbrev Sh (base : TopCat) := TopCat.Sheaf (ModuleCat R) base
+abbrev Sh (base : TopCat.{u}) := TopCat.Sheaf (ModuleCat.{v} R) base
 
 /-!
 Pass to complexes of sheaves,
@@ -33,7 +35,9 @@ C⁺(X)
 
 -- TODO: How should I properly handle the `R`?
 instance (base : TopCat) : Preadditive (Sh R base) := instPreadditiveSheaf
-abbrev C (base : TopCat) := CochainComplex (Sh R base) ℤ
+
+abbrev C (base : TopCat.{u}) := CochainComplex (Sh.{v} R base) ℤ
+
 instance (base : TopCat) : Abelian (C R base) := sorry
 instance (base : TopCat) : HasDerivedCategory (C R base) := sorry
 
@@ -46,7 +50,7 @@ D⁺(X)
 
 -- TODO: Stuck with whether or not should I
 -- wrap Sh/C/D in `Category`.
-abbrev D (base : TopCat) := DerivedCategory (C R X)
+abbrev D (base : TopCat.{u}) := DerivedCategory.{v'} (C R base)
 
 /-!
 Continuous map f : X → Y : TopCat
