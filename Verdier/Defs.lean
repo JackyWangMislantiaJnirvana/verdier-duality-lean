@@ -6,14 +6,13 @@ open CategoryTheory
 Base space:
 locally compact space of finite cohomological dim
 -/
-variable (X : TopCat) (Y : TopCat)
+variable (X : TopCat)
 
 /-!
 Base ring:
 notherian, commutative and of finite cohomological dim
 -/
--- variable {α : Type u} (CommRing : R)
-variable {α : Type u} (R) [CommRing R] [IsNoetherianRing R]
+variable (R) [CommRing R] [IsNoetherianRing R]
 
 /-!
 Sheaves considered:
@@ -34,8 +33,9 @@ C⁺(X)
 
 -- TODO: How should I properly handle the `R`?
 instance (base : TopCat) : Preadditive (Sh R base) := instPreadditiveSheaf
-
 abbrev C (base : TopCat) := CochainComplex (Sh R base) ℤ
+instance (base : TopCat) : Abelian (C R base) := sorry
+instance (base : TopCat) : HasDerivedCategory (C R base) := sorry
 
 /-!
 Pass to derived category
@@ -46,7 +46,7 @@ D⁺(X)
 
 -- TODO: Stuck with whether or not should I
 -- wrap Sh/C/D in `Category`.
-abbrev D (base : TopCat) := DerivedCategory (Category (C R X))
+abbrev D (base : TopCat) := DerivedCategory (C R X)
 
 /-!
 Continuous map f : X → Y : TopCat
