@@ -2,20 +2,21 @@ import Mathlib
 
 open CategoryTheory
 
+set_option pp.universes true
 universe v v' u w
 
 /-!
 Base space:
 locally compact space of finite cohomological dim
 -/
-variable (X : TopCat.{u}) [LocallyCompactSpace X] [T2Space X]
-variable (Y : TopCat.{u}) [LocallyCompactSpace Y] [T2Space Y]
+variable (X : TopCat.{u}) [LocallyCompactSpace.{u} X] [T2Space.{u} X]
+variable (Y : TopCat.{u}) [LocallyCompactSpace.{u} Y] [T2Space.{u} Y]
 
 /-!
 Base ring:
 notherian, commutative and of finite cohomological dim
 -/
-variable (R : Type w) [CommRing R] [IsNoetherianRing R]
+variable (R : Type w) [CommRing.{w} R] [IsNoetherianRing.{w} R]
 
 /-!
 Sheaves considered:
@@ -24,8 +25,8 @@ forming abelian category
 Sh(X)
 -/
 
--- TODO: Is this the right way to define sheaf of R-modules?
-abbrev Sh (base : TopCat.{u}) := TopCat.Sheaf (ModuleCat.{v} R) base
+abbrev Sh (base : TopCat.{u}) : Type (max u (v + 1) w)
+  := TopCat.Sheaf.{u, v, (max w (v + 1))} (ModuleCat.{v, w} R) base
 
 /-!
 Pass to complexes of sheaves,
@@ -38,7 +39,8 @@ instance (base : TopCat) : Preadditive (Sh R base) := instPreadditiveSheaf
 instance (base : TopCat) : Abelian (Sh R base) := sorry
 instance (base : TopCat) : HasDerivedCategory (Sh R base) := sorry
 
-abbrev C (base : TopCat.{u}) := CochainComplex (Sh.{v} R base) ℤ
+abbrev C (base : TopCat.{u}) : Type (max u (v + 1) w)
+  := CochainComplex (Sh.{v} R base) ℤ
 
 instance (base : TopCat) : Abelian (C R base) := sorry
 instance (base : TopCat) : HasDerivedCategory (C R base) := sorry
@@ -50,7 +52,8 @@ becoming triangulated (optional)
 D⁺(X)
 -/
 
-abbrev D (base : TopCat.{u}) := DerivedCategory.{v'} (C R base)
+abbrev D (base : TopCat.{u}) : Type (max u (v + 1) w)
+  := DerivedCategory.{v'} (C.{v} R base)
 
 /-!
 Continuous map f : X → Y : TopCat
@@ -62,27 +65,40 @@ This sums up to the "m aking derivation" map
 R(-) : (Sh(X) ⥤ Sh(Y)) → (D⁺(X) ⥤ D⁺(Y))
 -/
 
-def direct_image_proper_support (f : X → Y) (p_cont : Continuous f) :
-  Sh.{v, u} R X ⥤ Sh.{v, u} R Y where
-    obj ℱ := {
-      val := {
-        obj := sorry
-        map := sorry
-      }
-      cond := sorry
-    }
-    map g := sorry
-
 def direct_image (f : X → Y) (p_cont : Continuous f) :
   Sh.{v, u} R X ⥤ Sh.{v, u} R Y where
-    obj ℱ := {
+    obj F := {
+      val := {
+        -- obj := fun U => F.val.obj ((TopologicalSpace.Opens.map f).map U)
+        obj :=
+          -- fun U =>
+            -- let presh := F.val
+            -- let shmap : (TopologicalSpace.Opens X)ᵒᵖ → ModuleCat R := presh.obj
+            -- let preimg := TopologicalSpace.Opens.map f
+            -- let V := preimg.obj U
+            -- presh.obj V
+            sorry
+        map ι := sorry
+        map_comp := sorry
+        map_id := sorry
+      }
+      cond := sorry
+    }
+    map g := sorry
+    map_comp := sorry
+    map_id := sorry
+
+def direct_image_proper_support (f : X → Y) (p_cont : Continuous f) :
+  Sh.{v, u} R X ⥤ Sh.{v, u} R Y where
+    obj F := {
       val := {
         obj := sorry
         map := sorry
       }
       cond := sorry
     }
-    map g := sorry
+    map σ := sorry
+
 
 instance (f : X → Y) (p_cont : Continuous f) :
   -- Functor.Additive (direct_image_proper_support.{v, u} X Y R f p_cont) := sorry
@@ -95,11 +111,8 @@ def functor_to_chain_map (F : Sh R X ⥤ Sh R Y) :
 
 def derived (F : C R X ⥤ C R Y) : D.{v', u} R X ⥤ D.{v', u} R Y := sorry
 
-#check derived X Y R (functor_to_chain_map X Y R sorry)
-
 -- why does this universe assignment work???
 -- how is the order of XXX.{u, v} matched to the variables in the function definition?
-set_option pp.universes true
 abbrev R! (f : X → Y) (p_cont : Continuous f): D.{v', u} R X ⥤ D.{v', u} R Y :=
   derived.{v', u} X Y R (
     functor_to_chain_map.{v, u} X Y R (
