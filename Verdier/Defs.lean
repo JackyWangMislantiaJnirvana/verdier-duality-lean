@@ -5,6 +5,8 @@ open CategoryTheory
 set_option pp.universes true
 universe v v' u w
 
+namespace Verdier
+
 /-!
 Base space:
 locally compact space of finite cohomological dim
@@ -101,7 +103,14 @@ def direct_image_proper_support (f : X → Y) (p_cont : Continuous f) :
 
 
 instance (f : X → Y) (p_cont : Continuous f) :
-  Functor.Additive (direct_image_proper_support.{v, u} X Y R f p_cont) := sorry
+  Functor.Additive.{(max u (v + 1) w), (max u (v + 1) w)}
+    (direct_image_proper_support.{v, u, w} X Y R f p_cont) := sorry
+
+instance (f : X → Y) (p_cont : Continuous f) :
+  Limits.PreservesFiniteLimits (direct_image_proper_support.{v, u} X Y R f p_cont) := sorry
+
+instance (f : X → Y) (p_cont : Continuous f) :
+  Limits.PreservesFiniteColimits (direct_image_proper_support.{v, u} X Y R f p_cont) := sorry
 
 def functor_to_chain_map (F : Sh R X ⥤ Sh R Y) :
   C.{v, u, w} R X ⥤ C.{v, u, w} R Y where
@@ -124,14 +133,15 @@ abbrev Rstar (f : X → Y) (p_cont : Continuous f) :
         direct_image.{v, u} X Y R f p_cont))
 
 -- Maybe a better way to define R!
--- noncomputable def CategoryTheory.Functor.mapDerivedCategory
---   {C₁ : Type u₁} [Category.{v₁, u₁} C₁] [Abelian C₁] [HasDerivedCategory C₁]
---   {C₂ : Type u₂} [Category.{v₂, u₂} C₂] [Abelian C₂] [HasDerivedCategory C₂]
---   (F : Functor C₁ C₂) [F.Additive]
---   [Limits.PreservesFiniteLimits F] [Limits.PreservesFiniteColimits F] :
---   Functor (DerivedCategory C₁) (DerivedCategory C₂)
+-- CategoryTheory.Functor.mapDerivedCategory.{w₁, w₂, v₁, v₂, u₁, u₂} {C₁ : Type u₁} [Category.{v₁, u₁} C₁]
+--   [Abelian.{v₁, u₁} C₁] [HasDerivedCategory.{w₁, v₁, u₁} C₁] {C₂ : Type u₂} [Category.{v₂, u₂} C₂] [Abelian.{v₂, u₂} C₂]
+--   [HasDerivedCategory.{w₂, v₂, u₂} C₂] (F : CategoryTheory.Functor.{v₁, v₂, u₁, u₂} C₁ C₂)
+--   [Functor.Additive.{u₁, u₂, v₁, v₂} F] [Limits.PreservesFiniteLimits.{v₁, v₂, u₁, u₂} F]
+--   [Limits.PreservesFiniteColimits.{v₁, v₂, u₁, u₂} F]
 abbrev R!' (f : X → Y) (p_cont : Continuous f) :=
-  -- Functor.mapDerivedCategory (direct_image_proper_support.{v, u} X Y R f p_cont)
+  -- This failed type class instance resolution
+  -- may be a bug of Lean or
+  -- yet another universe problem
   Functor.mapDerivedCategory (direct_image_proper_support.{v, u} X Y R f p_cont)
 
 
@@ -156,7 +166,9 @@ variable
 
 theorem local_verdier_duality :
   ∃ g : D.{v, v', u, w} R Y ⥤ D.{v, v', u, w} R X,
-  Iso
+  Nonempty (Iso
     (derived_sheaf_hom_complex.{v, v', u, w} Y R ((R!.{v, v', u, w} X Y R f p_cont).obj F) G)
-    ((Rstar.{v, v', u, w} X Y R f p_cont).obj (derived_sheaf_hom_complex.{v, v', u, w} X R F (g.obj G)))
+    ((Rstar.{v, v', u, w} X Y R f p_cont).obj (derived_sheaf_hom_complex.{v, v', u, w} X R F (g.obj G))))
   := sorry
+
+end Verdier
